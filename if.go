@@ -3,6 +3,7 @@ package water
 import (
 	"errors"
 	"io"
+	"syscall"
 )
 
 // Interface is a TUN/TAP interface.
@@ -14,6 +15,7 @@ type Interface struct {
 	isTAP bool
 	io.ReadWriteCloser
 	name string
+	fd   syscall.Handle
 }
 
 // DeviceType is the type for specifying device types.
@@ -77,4 +79,8 @@ func (ifce *Interface) IsTAP() bool {
 // Name returns the interface name of ifce, e.g. tun0, tap1, tun0, etc..
 func (ifce *Interface) Name() string {
 	return ifce.name
+}
+
+func (ifce *Interface) Fd() syscall.Handle {
+	return ifce.fd
 }

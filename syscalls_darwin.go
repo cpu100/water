@@ -90,7 +90,7 @@ func openDevSystem(config Config) (ifce *Interface, err error) {
 		}
 	}
 
-	var fd int
+	var fd syscall.Handle
 	// Supposed to be socket(PF_SYSTEM, SOCK_DGRAM, SYSPROTO_CONTROL), but ...
 	//
 	// In sys/socket.h:
@@ -146,6 +146,7 @@ func openDevSystem(config Config) (ifce *Interface, err error) {
 	}
 
 	return &Interface{
+		fd:    fd,
 		isTAP: false,
 		name:  string(ifName.name[:ifNameSize-1 /* -1 is for \0 */]),
 		ReadWriteCloser: &tunReadCloser{
@@ -156,8 +157,8 @@ func openDevSystem(config Config) (ifce *Interface, err error) {
 
 // openDevTunTapOSX opens tun / tap device, assuming tuntaposx is installed
 func openDevTunTapOSX(config Config) (ifce *Interface, err error) {
-	var fd int
-	var socketFD int
+	var fd syscall.Handle
+	var socketFD syscall.Handle
 
 	if config.DeviceType == TAP && !strings.HasPrefix(config.Name, "tap") {
 		return nil, errors.New("device name does not start with tap when creating a tap device")
@@ -204,6 +205,7 @@ func openDevTunTapOSX(config Config) (ifce *Interface, err error) {
 		isTAP:           config.DeviceType == TAP,
 		ReadWriteCloser: os.NewFile(uintptr(fd), "tun"),
 		name:            config.Name,
+		fd:              fd,
 	}, nil
 }
 

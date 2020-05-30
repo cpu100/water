@@ -4,6 +4,6 @@ package water
 
 import "syscall"
 
-func setNonBlock(fd int) error {
+func setNonBlock(fd syscall.Handle) error {
 	return syscall.SetNonblock(fd, true)
 }

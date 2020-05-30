@@ -8,7 +8,7 @@ import (
 )
 
 func openDev(config Config) (ifce *Interface, err error) {
-	var fdInt int
+	var fdInt syscall.Handle
 	if fdInt, err = syscall.Open(
 		"/dev/net/tun", os.O_RDWR|syscall.O_NONBLOCK, 0); err != nil {
 		return nil, err
@@ -23,5 +23,6 @@ func openDev(config Config) (ifce *Interface, err error) {
 		isTAP:           config.DeviceType == TAP,
 		ReadWriteCloser: os.NewFile(uintptr(fdInt), "tun"),
 		name:            name,
+		fd:              fdInt,
 	}, nil
 }
